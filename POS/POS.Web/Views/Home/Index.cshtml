@@ -1,0 +1,243 @@
+﻿@{
+    List<SelectListItem> items = (List<SelectListItem>)ViewBag.Items;
+}
+<div class="modal fade bd-example-modal-sm " tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="successModal">
+    <div class="modal-dialog modal-sm text-center">
+        <div class="modal-content bg-success justify-content-center" style="color:white;height:50px;font:300">
+            Bill Saved
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3" id="mainCard">
+    <div class="card-body">
+        <div class="card mb-3">
+            <div class="card-header">
+                Current Date and Time
+            </div>
+            <div class="card-body">
+                <form class="row">
+                    <div class="form-group d-flex mb-2">
+                        <label for="dateInput" style="margin-right:50px">Date:</label>
+                        <input type="text" class="form-control-sm" id="dateInput" value="" readonly />
+                    </div>
+                    <div class="form-group d-flex">
+                        <label for="timeInput" style="margin-right:49px">Time:</label>
+                        <input type="text" class="form-control-sm" id="timeInput" value="" readonly />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                Item Selection
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-3 mb-2">
+                            <label for="inputField1">Item:</label>
+                            <select class="form-control-sm" id="item" required>
+                                <option value="">Select an Item</option>
+                                @foreach (var item in items)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-sm-3 mb-2">
+                            <label for="quantity">Quantity:</label>
+                            <input type="text" class="form-control-sm" id="quantity" disabled>
+                            <div class="text-danger" id="quantityDanger" style="display:none">Please enter a valid amount</div>
+                        </div>
+                        <div class="col-sm-3 mb-2">
+                            <label for="unitPrice">Price/Unit:</label>
+                            <input type="text" class="form-control-sm" id="unitPrice" disabled>
+                        </div>
+                        <div class="col-sm-3 mb-2">
+                            <label for="amount">Amount:</label>
+                            <input type="text" class="form-control-sm" id="amount" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end">
+                <div style="margin-right:5px">
+                    <button type="button" class="btn btn-success" id="addBtn" disabled>Add to Bill</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-secondary" id="resetBtn" disabled>Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Bill Details
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered text-center" id="billTable">
+                    <tr class="table-active">
+                        <th scope="col">Item</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price/Unit</th>
+                        <th scope="col">Amount</th>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-sm-3 mb-2">
+                        <label for="subTotal">Sub Total:</label>
+                        <input type="text" class="form-control-sm" id="subTotal" disabled>
+                    </div>
+                    <div class="col-sm-3 mb-2">
+                        <label for="discount">Discount(in %):</label>
+                        <input type="text" class="form-control-sm" id="discount" value="" disabled>
+                        <div class="text-danger" id="discountDanger" style="display:none">Please enter a valid amount</div>
+                    </div>
+                    <div class="col-sm-3 mb-2">
+                        <label for="tax">Tax:</label>
+                        <input type="text" class="form-control-sm" id="tax" value="12%" disabled>
+                    </div>
+                    <div class="col-sm-3 mb-2">
+                        <label for="grandTotal">Grand Total:</label>
+                        <input type="text" class="form-control-sm" id="grandTotal" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-left">
+        <button class="btn btn-success" id="paidBtn" disabled>Amount Paid & Add New Bill</button>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        var itemUnitPrice;
+        var subTotal = 0;
+        var grandTotal = 0;
+
+        $(document).ready(function () {
+            var currentDate = new Date();
+            var date = currentDate.toLocaleDateString();
+            var time = currentDate.toLocaleTimeString();
+
+            $("#dateInput").val(date);
+            $("#timeInput").val(time);
+        });
+
+        $("#addBtn").click(function () {
+            var selectedItem = $("#item").find('option:selected').text();
+            var quantity = $("#quantity").val();
+            var unitPrice = $("#unitPrice").val();
+            var amount = parseInt($("#amount").val());
+            var rowAttribute = "table-light";
+
+            $("#billTable").append("<tr class=\"table-light\"><td>" + selectedItem + "</td><td>" + quantity + "</td><td>" + unitPrice + "</td><td>" + amount + "</td></tr>");
+
+            subTotal += amount;
+            $("#subTotal").val(subTotal);
+
+            grandTotal = subTotal + (subTotal * (12 / 100));
+            $("#grandTotal").val(grandTotal);
+
+            $("#item").val("");
+            $("#quantity").val("");
+            $("#quantity").prop("disabled", true);
+            $("#unitPrice").val("");
+            $("#amount").val("");
+            $("#discount").prop("disabled", false);
+            $("#paidBtn").prop("disabled", false);
+        });
+
+        $("#item").on('change', function () {
+            var selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value !== "") {
+                $("#quantity").prop("disabled", false);
+                $("#addBtn").prop("disabled", false);
+                $("#resetBtn").prop("disabled", false);
+            } else {
+                $("#quantity").prop("disabled", true);
+                $("#addBtn").prop("disabled", true);
+                $("#resetBtn").prop("disabled", true);
+            }
+
+            itemUnitPrice = $(this).val();
+            $("#unitPrice").val(itemUnitPrice);
+        });
+
+        $("#resetBtn").on('click', function () {
+            $("#item").val("");
+            $("#quantity").val("");
+            $("#quantity").prop("disabled", true);
+            $("#unitPrice").val("");
+            $("#amount").val("");
+            $("#addBtn").prop("disabled", true);
+            $("#resetBtn").prop("disabled", true);
+        });
+
+        $(document).ready(function () {
+            $("#quantity").keyup(function () {
+                var quantity = $("#quantity").val();
+                if (!/^\d+$/.test(quantity) || quantity <= 0) {
+                    $("#addBtn").prop("disabled", true);
+                    $("#quantityDanger").show();
+                } else {
+                    $("#quantityDanger").hide();
+                    $("#addBtn").prop("disabled", false);
+                    var price = $("#unitPrice").val();
+                    var total = quantity * price;
+                    $("#amount").val(total);
+                }
+            });
+        });
+
+        $("#discount").keyup(function () {
+            var discountValue = $("#discount").val();
+            if (discountValue === "") {
+                discountValue = 0;
+            }
+            var discount;
+            if (!/^\d+$/.test(discountValue) || discountValue < 0) {
+                $("#discountDanger").show();
+                $("#paidBtn").prop("disabled", true);
+            } else {
+                $("#discountDanger").hide();
+                $("#paidBtn").prop("disabled", false);
+                discount = parseFloat(discountValue);
+                var discountedTotal = grandTotal - (grandTotal * (discount / 100));
+                $("#grandTotal").val(discountedTotal);
+            }
+        });
+
+        $("#paidBtn").click(function () {
+            $("#successModal").modal("show");
+            setTimeout(function () {
+                $("#successModal").modal("hide");
+                location.reload();
+            }, 1000);
+
+            var date = $("#dateInput").val();
+            var time = $("#timeInput").val();
+            var dateTime = date + " " + time;
+            var subTotal = $("#subTotal").val();
+            var discount = $("#discount").val();
+            if (discount === "") {
+                discount = 0;
+            }
+            var grandTotal = $("#grandTotal").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/InsertBillData",
+                data: { dateTime: dateTime, subTotal: subTotal, discount: discount, grandTotal: grandTotal },
+                success: function (data) {
+                }
+            });
+        });
+    </script>
+}

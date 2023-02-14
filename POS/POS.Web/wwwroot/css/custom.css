@@ -1,0 +1,22 @@
+﻿#mainNav {
+    background-color: #144272;
+    color: #FFFBF5;
+    font-weight:bold;
+}
+
+#mainNav a{
+    color: #FFFBF5;
+    font-weight: bold;
+}
+
+#mainCard {
+    background-color: #E3F6FF;
+}
+
+.card-header {
+    background-color: #EFF8FF;
+}
+
+.card-footer {
+    background-color: #EFF8FF;
+}
