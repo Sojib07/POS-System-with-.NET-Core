@@ -19,11 +19,18 @@ namespace POS.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IList<SelectListItem> items = new List<SelectListItem>();
-            string query = "SELECT ItemName, UnitPrice FROM Items ORDER BY ItemName DESC";
+            try
+            {
+                IList<SelectListItem> items = new List<SelectListItem>();
+                string query = "SELECT ItemName, UnitPrice FROM Items ORDER BY ItemName DESC";
 
-            items = await _dataUtility.GetItemsAsync(query,null);
-            ViewBag.Items = items;
+                items = await _dataUtility.GetItemsAsync(query, null);
+                ViewBag.Items = items;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
 
             return View();
         }
@@ -31,21 +38,28 @@ namespace POS.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertBillData(string dateTime, string subTotal, string discount, string grandTotal)
         {
-            var Id= Guid.NewGuid(); ;
-            var timeDate= DateTime.Parse(dateTime);
-            var subTot=double.Parse(subTotal);
-            var discnt = double.Parse(discount);
-            var grandTtl=double.Parse(grandTotal);
+            try
+            {
+                var Id = Guid.NewGuid();
+                var timeDate = DateTime.Parse(dateTime);
+                var subTot = double.Parse(subTotal);
+                var discnt = double.Parse(discount);
+                var grandTtl = double.Parse(grandTotal);
 
-            string sqlQuery = "INSERT INTO Bills (Id, DateTime, SubTotal, Discount, GrandTotal) VALUES (@xId, @xDateTime, @xSubTotal, @xDiscount, @xGrandTotal)";
-            Dictionary<string,object> parameters = new Dictionary<string,object>();
-            parameters.Add("xId", Id);
-            parameters.Add("xDateTime", timeDate);
-            parameters.Add("xSubTotal", subTot);
-            parameters.Add("xDiscount", discnt);
-            parameters.Add("xGrandTotal", grandTtl);
+                string sqlQuery = "INSERT INTO Bills (Id, DateTime, SubTotal, Discount, GrandTotal) VALUES (@xId, @xDateTime, @xSubTotal, @xDiscount, @xGrandTotal)";
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("xId", Id);
+                parameters.Add("xDateTime", timeDate);
+                parameters.Add("xSubTotal", subTot);
+                parameters.Add("xDiscount", discnt);
+                parameters.Add("xGrandTotal", grandTtl);
 
-            await _dataUtility.ExecuteCommandAsync(sqlQuery,parameters);
+                await _dataUtility.ExecuteCommandAsync(sqlQuery, parameters);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
 
             return RedirectToAction(nameof(Index));
         }

@@ -12,7 +12,8 @@
 <div class="card mb-3" id="mainCard">
     <div class="card-body">
         <div class="card mb-3">
-            <div class="card-header">
+            <div class="card-header" style="font-weight:bold">
+                <i class="fas fa-calendar-check"></i>
                 Current Date and Time
             </div>
             <div class="card-body">
@@ -30,7 +31,8 @@
         </div>
 
         <div class="card mb-3">
-            <div class="card-header">
+            <div class="card-header" style="font-weight:bold">
+                <i class="fa fa-list-alt"></i>
                 Item Selection
             </div>
             <div class="card-body">
@@ -73,7 +75,8 @@
         </div>
 
         <div class="card">
-            <div class="card-header">
+            <div class="card-header" style="font-weight:bold">
+                <i class="fas fa-money-bill"></i>
                 Bill Details
             </div>
             <div class="card-body">
@@ -152,6 +155,9 @@
             $("#amount").val("");
             $("#discount").prop("disabled", false);
             $("#paidBtn").prop("disabled", false);
+            $("#quantity").prop("disabled", true);
+            $("#addBtn").prop("disabled", true);
+            $("#resetBtn").prop("disabled", true);
         });
 
         $("#item").on('change', function () {
@@ -178,22 +184,21 @@
             $("#amount").val("");
             $("#addBtn").prop("disabled", true);
             $("#resetBtn").prop("disabled", true);
+            $("#quantityDanger").hide();
         });
 
-        $(document).ready(function () {
-            $("#quantity").keyup(function () {
-                var quantity = $("#quantity").val();
-                if (!/^\d+$/.test(quantity) || quantity <= 0) {
-                    $("#addBtn").prop("disabled", true);
-                    $("#quantityDanger").show();
-                } else {
-                    $("#quantityDanger").hide();
-                    $("#addBtn").prop("disabled", false);
-                    var price = $("#unitPrice").val();
-                    var total = quantity * price;
-                    $("#amount").val(total);
-                }
-            });
+        $("#quantity").keyup(function () {
+            var quantity = $("#quantity").val();
+            if (!/^\d+$/.test(quantity) || quantity <= 0) {
+                $("#addBtn").prop("disabled", true);
+                $("#quantityDanger").show();
+            } else {
+                $("#quantityDanger").hide();
+                $("#addBtn").prop("disabled", false);
+                var price = $("#unitPrice").val();
+                var total = quantity * price;
+                $("#amount").val(total);
+            }
         });
 
         $("#discount").keyup(function () {

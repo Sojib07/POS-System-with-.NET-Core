@@ -33,8 +33,7 @@ namespace POS.Services
             return sqlCommand;
         }
 
-        public async Task ExecuteCommandAsync(string command,
-            Dictionary<string, object> parameters)
+        public async Task ExecuteCommandAsync(string command, Dictionary<string, object> parameters)
         {
             using SqlCommand sqlCommand = PrepareCommand(command, parameters);
 
